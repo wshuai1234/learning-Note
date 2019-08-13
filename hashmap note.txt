@@ -1,0 +1,202 @@
+hashmap note
+// Java 支持HashMap , TreeMap, LinkedHashMap
+HashMap的API： put, get, remove, containsKey, entrySet(), values(), containsValue(), clear(), size(), isEmpty()..
+HashMap<K, V> = new HashMap<>();
+search，insert, update, delete 平均复杂度O（1）， 最坏O（n）
+
+hashmap 允许null键！！！
+hashmap is a table of buckets(an array of buckets), using the array index to denote each bucket
+bucket下标是通过hash function确定的！！！
+close addressing(chaining) 避免collision(每个bucket存储的是一个linkedlist)
+open addressing把key装进下一个available的bucket
+index = hash(key) % tablesize
+
+hashmap (array of entries)
+1. Define class of entry
+class Entry<K, V>{
+	final K key;
+	V value;
+	Entry<K, V> next;
+	Entry(K key, V value){
+		 this.key = key;
+		 this.value = value;
+	}
+	public K getKey(){
+		return key;
+	}
+	public V getValue(){
+		return value;
+	}
+	public void setValue(V value){
+		this.value = value;
+	}
+}
+
+2. maintain an array of entries
+Entry<K, V>[] array;
+
+3. hash(key) to get the hash
+private int hash(K key){
+	if (key == null){
+		return 0;
+	}
+	int hashNumber = key.hashCode();
+	// postprocessing to make the hashNumber non-negative
+}
+4. from the hashNumber, mapped to the entry index
+int getIndex(int hashNumber){
+	return hashNumber % array.length;
+}
+5. when find, need to find the entire singly linkedlist
+Entry<K, V> cur = array[index];
+while (cur != null){
+	K curKey = cur.getKey();
+	if (curKey is the same as given key){
+		//...
+	}
+	cur = cur.next;
+}
+
+// hashCode() 非常重要！！！ 决定map的性能
+// rehashing => 当collision太多的时候， rehashing,增大数组长度，每次数组长度加倍。
+// load factor : control when rehashing is needed, ratio of 键值对数量/buckets数量。
+默认0.75 load factor 超出就rehashing
+
+
+
+
+
+哈希表实现：默写一遍
+ 
+
+
+
+class MyHashMap<K, V>{
+	public static class Node<K, V>{
+		private final K key;
+		private V value;
+		Node<K, V> next = null;
+		public Node(K k, V v){
+			this.key = k;
+			this.value = v;
+		}
+		public K getKey(){
+			return key;
+		}
+		public V getValue(){
+			return value;
+		}
+		public void setValue(V v){
+			this.value = v;
+		}
+	}
+
+
+	private static final init INIT_CAP = 16；
+	private static final double LOAD_FACTOR = 0.75;
+	private Node<K, V>[] array;
+	private int size;
+	public MyHashMap(){
+		array = (Node<K, V>[]) new Node[INIT_CAP]；
+		size = 0;
+	}
+	public int size(){
+		return size;
+	}
+	public boolean isEmpty(){
+		return size == 0;
+	}
+	public void clear(){
+		Arrays.fill(array, null);
+		size = 0;
+	}
+	public V get(K key){
+		Node<K, V> node = array[index(key)];
+		while (node != null){
+			if (equalsKey(node.getKey(), key)){
+				return node.getValue();
+			}
+			node = node.next;
+		}
+		return null;
+	}
+	public boolean containsKey(K key){
+		Node<K, V> node = array[index(key)];
+		while (node != null){
+			if (equalsKey(node.getKey()), key){
+				return node.getValue();
+			}
+			node = node.next;
+		}
+		return null;
+	}
+	public V put(K key, V value){
+		int i = index(key);
+		Node<K, V> node = array[i];
+		while (node != null){
+			if (equalsKey(node.getKey(), key)){
+				V oldValue = node.getValue();
+				node.setValue(value);
+				return oldValule;
+			}
+			node = node.next;
+		}
+		Node<K, V> newEntry = new Node<>(key, value);
+		newEntry.next = array[i];
+		array[i] = newEntry;
+		size++;
+		if (needRehashing(){
+			rehash();
+		}
+		return null;
+	}
+
+	public V remove(K key){
+		int i = index(key);
+		Node<K, V> prev = null;
+		Node<K, V> curr = array[i];
+		while (cur != null){
+			if (equalsKey(curr.getKey(), key){
+				if (prev == null){
+					array[i] = curr.next;
+				}else{
+					prev.next = curr.next;
+				}
+				size--;
+				return currr.getValue();
+			}
+			prev = curr;
+			curr = curr.next;
+		}
+		return null;
+	}
+	private int hash(K key){
+		if (key == null){
+			return 0;
+		}
+		int code = key.hashCode();
+		return code & 0x7fffffff;
+	}
+	private int index(K key){
+		return hash(key) % array.length;
+	}
+	private boolean equalsKey(K a, K b){
+		return a == b || a != null && a.equals(b);
+	}
+	private boolean needRehashing(){
+		return size > LOAD_FACTOR * array.length;
+	}
+	private void rehash(){
+		Node<K, V>[] old = array;
+		array = (Node<K, V>[]) new Node[old.length * 2];
+		for (Node<K, V> e : old){
+			while (e != null){
+				Node<K, V> next = e.next;
+				int i = index(e.getKey());
+				e.next = array[i];
+				array[i] = e;
+				e = next;
+			}
+		}
+	}
+}
