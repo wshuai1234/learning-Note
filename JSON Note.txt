@@ -1,0 +1,158 @@
+json(javascript object notation)
+// json 简介
+// 这是一个sites：包含3个对象的数组
+{
+	"sites":[
+	{"name" : "菜鸟教程","url":"www.runoob.com"},
+	{"name": "google","url":"www.google.com"},
+	{"name":"百度","url":"www.baidu.com"}
+	]
+}
+// json的优点，使用js描述数据对象，独立于语言和平台，json parser,library支持不同语言。具有自我描述，容易理解。
+// json文本格式语法上与js对象的代码相同，使用js内建的eval()函数，可以生成原来的js对象。因此JSON比较流行。
+例如HTML中
+<p>
+网站名称:<span id="jname"></span><br />
+</p>
+<script>
+var JSONObject = {
+	"name":"菜鸟教程"
+}
+document.getElementById("jname").innerHTML=JSONObject.name
+</script>
+
+
+
+
+
+
+
+
+//json语法
+//json 语法时js语法的子集。
+// 数据保存在名称/值对中，数据由逗号分隔，大括号保存对象，中括号保存数据。
+名称/值对例子："name":"wang shuai"
+{"age":"30"}
+对象可以包含多个名称/值对：
+{
+	"name":"wangshuai",
+	"age":"25"
+}
+// json 数组[]
+{
+	"sites":[
+	{},
+	{},
+	{}
+	]
+}
+json的boolean可以是true 或者false
+json可以设置null值。
+获取值和修改值如何操作？
+例如上面的例子，sites[0].name得到值，site[0].name = "菜鸟"修改值。
+json的文件类型是.json
+
+
+
+
+
+
+
+
+
+
+
+
+
+// json对象
+key/value对中key必须是字符串，value可以是合法的json数据类型(字符串，数字，对象，数组，布尔，null)
+例如"age":"1000"  和"age":1000  都是合法的
+访问对象的值通过object.attribute，或者通过中括号，object[name]也可以
+json中的for循环：
+var myObj = {"name":"runoob","alexa":1000,"site":null};
+for (x in myObj){
+	document.getElementById("id").innerHTML += x + "<br>";
+}
+这样就输出了三行分别为name,alexa, site
+使用.或者[]修改json对象的值。
+删除对象使用delete: 例如delete MyObj.sites.site1或者delete MyObj.sites["site1"]都是可以的
+
+
+
+
+
+
+
+
+
+
+// json数组
+!!使用中括号
+示例["google","runoob","taobao"]
+数组中的值必须是合法的JSON数据类型(字符串，数组，对象，数组，布尔，null)
+
+
+
+
+
+
+
+
+
+
+// json.parse()
+json通常与服务端交换数据，接收处理client数据时，一般是字符串，使用JSON.parse()将数据转换为JavaScript对象。
+
+
+语法： JSON.parse(text[, reviver])
+text: 必须，一个有效的JSON字符串。
+reviver：可选，一个转换结果的函数，将为对象的每个成员调用此函数。
+
+JSON parse示例：
+例如从服务端接收了一下数据:{"name":"runoob","alexa":"100","site":"www.runoob.com"}
+使用parse转换数据为JS对象。前提确保是标准JSON格式！！！
+var obj = JSON.parse('{"name":"runoob","alexa":"100","site":"www.runoob.com"}');
+
+
+使用AJAX从服务器请求JSON数据，并且解析：
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function(){
+	if (this.readyState == 4 && this.status == 200){
+		myObj = JSON.parse(this.responseText);
+		document.getElementById("demo").innerHTML = myObj.name;
+	}
+}
+xmlhttp.open("GET", "/try/ajax/json_demo.txt", true);
+xmlhttp.send();
+
+如果从服务端接收数组的JSON数据，那么：
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function(){
+	if (this.readyState == 4 && this.status == 200){
+		myArr = JSON.parse(this.responseText);
+		document.getElementById("demo").innerHTML = myArr[1];
+	}
+};
+xmlhttp.open("GET","/try/ajax/json_demo_array.txt", true);
+xmlttp.send();
+
+//json不能存储date对象，如果需要存储date对象，则转换为字符串，之后再转换回去。
+例子：
+var txt = '{"name":"runoob","initdate":"2013-12-14","site":"www.runoob.com"}';
+var obj = JSON.parse(txt);
+obj.initdate = new Date(obj.initdate);
+document.getElementById("demo").innerHTML = obj.name + "创建日期" + obj.initdate;
+// reviver函数的意思是对对象的每个成员都调用此函数！！！
+主流浏览器都支持json.parse()函数。
+
+
+
+
+
+// 在向服务器发送数据时候，一般发送字符串，使用JSON.stringify()将JS对象转换为字符串。
+语法
+JSON.stringify(value[, replacer[, space]])
+value就是需要转换的JS值。
+replacer可选，用于转换结果的函数或者数组，如果是函数，类似reviver
+如果是数组，则。。。
+服务端  （parse）=》  JSON  => (stringify)=> 服务端
