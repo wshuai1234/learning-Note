@@ -24,10 +24,10 @@ class Entry<K, V>{
 	public K getKey(){
 		return key;
 	}
-	public V getValue(){
+	public sychronized V getValue(){
 		return value;
 	}
-	public void setValue(V value){
+	public sychronized void setValue(V value){
 		this.value = value;
 	}
 }
@@ -83,10 +83,10 @@ class MyHashMap<K, V>{
 		public K getKey(){
 			return key;
 		}
-		public V getValue(){
+		public sychronized V getValue(){
 			return value;
 		}
-		public void setValue(V v){
+		public sychronized void setValue(V v){
 			this.value = v;
 		}
 	}
@@ -100,17 +100,17 @@ class MyHashMap<K, V>{
 		array = (Node<K, V>[]) new Node[INIT_CAP]；
 		size = 0;
 	}
-	public int size(){
+	public sychronized int size(){
 		return size;
 	}
-	public boolean isEmpty(){
+	public sychronized boolean isEmpty(){
 		return size == 0;
 	}
-	public void clear(){
+	public sychronized void clear(){
 		Arrays.fill(array, null);
 		size = 0;
 	}
-	public V get(K key){
+	public sychronized V get(K key){
 		Node<K, V> node = array[index(key)];
 		while (node != null){
 			if (equalsKey(node.getKey(), key)){
@@ -120,7 +120,7 @@ class MyHashMap<K, V>{
 		}
 		return null;
 	}
-	public boolean containsKey(K key){
+	public sychronized boolean containsKey(K key){
 		Node<K, V> node = array[index(key)];
 		while (node != null){
 			if (equalsKey(node.getKey()), key){
@@ -130,7 +130,7 @@ class MyHashMap<K, V>{
 		}
 		return null;
 	}
-	public V put(K key, V value){
+	public sychronized V put(K key, V value){
 		int i = index(key);
 		Node<K, V> node = array[i];
 		while (node != null){
@@ -151,7 +151,7 @@ class MyHashMap<K, V>{
 		return null;
 	}
 
-	public V remove(K key){
+	public sychronized V remove(K key){
 		int i = index(key);
 		Node<K, V> prev = null;
 		Node<K, V> curr = array[i];
