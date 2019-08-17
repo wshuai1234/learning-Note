@@ -1,0 +1,60 @@
+9 
+Jsoup爬取小说章节，爬取章节内容，数据结构设计，数据持久化存储。
+要求：爬起小说名称，作者，子树，章节列表URL，章节列表名称以及详细内容链接，章节详细内容。
+
+code:
+public class NovelSplider {
+
+	public static void main(String[] args) throws Exception {
+		
+		NovelSplider.getNovel();
+		
+	}
+	public static String getContent(String url) throws Exception {
+		// get chapter 's content by url
+		url = "https://www.x23us.com/html/69/69123/29664254.html";
+		Document doc = Jsoup.connect(url).get();
+		Elements select = doc.select("#contents");
+		System.out.println(select.html());
+		return select.html();
+	}
+	public static Map<String, String> getChapterList(String url) throws Exception {
+		// get correspond novel chapter list by url
+		url = "https://www.x23us.com/html/69/69123/";
+		Map<String, String> chapterMap = new HashMap<>();
+		Document doc = Jsoup.connect(url).get();
+		// key is chapter name, value is its url
+		Elements elements = doc.select("#at > tbody > tr > td > a");
+		System.out.println(elements);
+		for (Element ele : elements) {
+			// each ele is a tag
+			String chapterName = ele.text();
+			String href = ele.attr("href");
+			System.out.println(chapterName + "\t" + href);
+			chapterMap.put(chapterName, "https://www.x23us.com/html/69/69123/" + href);
+			getContent(href);
+		}
+		return chapterMap;
+	}
+	public static void getNovel() throws Exception {
+		// URL?
+		// #content > dd:nth-child(2) > h1
+		// prepare URL
+		String url = "https://www.x23us.com/book/69123";
+		Connection connect = Jsoup.connect(url);
+		Document doc = connect.get();
+		Elements select = doc.select("#content > dd:nth-child(2) > h1");
+		System.out.println("novel name:" + select.text());
+		// author
+		// #at > tbody > tr:nth-child(1) > td:nth-child(4)
+		Elements author = doc.select("#at > tbody > tr:nth-child(1) > td:nth-child(4)");
+		System.out.println("author:" + author.text());
+		// link #content > dd:nth-child(3) > div:nth-child(2) > p.btnlinks > a.read
+		Elements href = doc.select("#content > dd:nth-child(3) > div:nth-child(2) > p.btnlinks > a.read");
+		System.out.println("href:" + href.attr("href"));
+		// total length of article
+		Elements wordCount = doc.select("#at > tbody > tr:nth-child(2) > td:nth-child(4)");
+		System.out.println("total number:" + wordCount.text());
+		getChapterList(href.attr("href"));
+	}
+}
