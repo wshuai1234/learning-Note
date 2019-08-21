@@ -1,0 +1,209 @@
+javascript笔记
+
+JS简介：
+直接写入HTML输出流：
+document.write("<h1>this is a header</h1>");
+
+对事件的反应：
+<button type="button" onclick="alert('欢迎')">点我！</button>
+
+查找元素： x = document.getElementById("id_name");
+改变内容： x.innerHTML="Hello";
+
+element.src.match("bulbon") : 检索对应元素的src属性值里面有没有包含bulbon这个字符串。
+
+改变HTML样式： 
+x = document.getElementById("demo");
+x.style.color="#ff0000";
+
+验证用户输入例子：           
+<input id="demo" type="text">
+function myFunction(){
+	var x = document.getElementById("demo").value;
+	if (x == "" || isNaN(x)){
+		alert("不是数字");
+	}
+}
+<button type="button" onclick = "myFunction()">点击这里</button>
+-----------------------------------------
+
+
+Js用法
+
+HTML中的脚本必须位于<script>之间
+脚本放在<body>和<head>之间
+
+<script>代表要插入Js
+通常把JS脚本放到<head>里，这样不会干扰body的内容
+引入外部文件：外部脚本不能包含<script>标签！！！
+<script src="file_path.js"></script>
+
+-----------------------------------------------------------
+
+
+
+Js输出：
+用alert()弹出警告框。
+用document.write()方法将内容写到HTML文档中。
+用innerHTML写入HTML元素
+用console.log()写入到浏览器控制台。
+-----------------------------------------------------------
+Js语法：
+
+Javascript字面量：Number,String, Array, Object, Function
+Javascript变量： var定义变量，=赋值。
+
+----------------------------------------------------------
+javascript语句标识符
+break 跳出当前循环
+catch ： 用于try catch语句块
+continue 跳过循环的一个迭代
+do..while
+for
+for..in
+function
+if else
+return
+switch
+throw
+try
+var
+while
+\ 换行符
+
+---------------------------------------
+javascript注释： 使用//
+多行注释：使用/ * 内容   */
+---------------------------------------
+
+
+
+javascript数据类型
+基本类型： String, Number, Boolean, Null, Undedfined, Symbol(独一无二的值)
+引用数据类型： Object, Array, Function
+
+var car = {name:"biyadi", fullName:function(){console.log("666")}};
+car.fullName()  => 输出666
+-------------------------------------------------
+
+
+Js函数：
+
+变量在函数外 =》 global
+在函数内 没有var声明=》 依然global
+
+-----------------------------------------
+javascript事件：
+onchange :HTML元素改变
+onclick  ： 用户点击HTML元素
+onmouseover：鼠标悬停
+onmouseout：鼠标移走
+onkeydown:按下键盘按键
+onload：浏览器已完成页面加载
+---------------------------------------
+javascript字符串
+转义符使用\
+
+' 转义单引号
+" 转义双引号
+\转义反斜杠
+n转义换行符
+r转义回车
+t转义tab
+b转义退格
+f转义换页符
+------------------------------------------
+javascript比较：
+== 等
+=== 绝对等于
+！=
+！==
+<
+>
+>=
+<=
+&&
+||
+!
+--------------------------------------
+javascript switch语句
+例子
+
+switch(n){
+	case 1:
+		...
+		break;
+	case 2 :
+		...
+		break;
+	case 3:
+		...
+		break;
+	default:
+		....
+}
+----------------------------------
+javascript constructor函数
+使用constructor属性查看对象中是否包含字符串"Array"
+function isArray(myArray){
+	return myArray.constructor.toString().indexOf("Array") > -1;
+}
+------------------------------------
+JavaScript 正则表达式
+/正则表达式主体/修饰符(可选)
+i是修饰符=》搜索不区分大小写。
+正则表达式通常用于字符串的两个方法： replace()和search()
+
+var str = "Visit Runoob!"; 
+var n = str.search(/Runoob/i);  输出6
+
+
+var str = document.getElementById("demo").innerHTML; 
+var txt = str.replace(/microsoft/i,"Runoob"); 替换成了runoob
+
+
+i  不区分大小写
+g 执行全局匹配 查找所有匹配
+m执行多行匹配
+[abc] 查找方括号中的任何字符
+[0-9] 查找任何数字
+（x|y）查找任何以|分隔的选项
+
+
+test方法：
+/e/.test("The best things")  => true
+
+exec方法，存放匹配结果。
+
+---------------------------------------
+javascript错误
+try catch throw finally
+throw可以抛出字符串，数字，逻辑值或对象。
+
+--------
+JS debug
+
+F12启动调试 或增加debugger
+-------------------------------------
+
+
+javascript 变量提升
+
+变量可以在使用后声明，也可以先试用再声明。
+
+初始化之后不会提升!!!!!!!!!!!!!!
+
+-------------------------------------
+javascript 严格模式(use strict)
+严格模式下不能使用未声明的变量，不能删除变量或者对象，函数，不允许变量重名，不允许使用八进制。
+不能使用转义符，不能对只读变量赋值，不能对使用getter方法读取的属性赋值，变量名不能使用eval，arguments，
+
+
+--------------------------------------------------
+javascript误区：
+==比较内容
+===绝对相等
+switch语句里的case使用的是===
+------------------------------------
+href="javascript:void(0)" =》 死链接 点击之后什么都不会发生
+
