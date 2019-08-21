@@ -1,0 +1,220 @@
+jQuery note
+
+
+jQuery功能： HTML元素选取，操作，CSS操作，HTML事件函数，Js特效和动画，HTML DOM遍历和修改，AJAX, Utilities.
+
+
+
+如何在网页中插入jQuery ?
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+
+
+基本语法: $(selector).action()
+例子： $(this).hide()  隐藏当前元素
+$("p").hide()  隐藏所有段落
+$("p.test").hide() 隐藏所有class为test的p元素
+$("#test").hide() 隐藏所有id="test"的元素
+
+
+
+文档就绪事件： $(document).read(function(){
+	// 确保在文档加载之后运行jQuery代码
+});
+
+
+. class选择器    # id选择器
+使用Xpath-helper copy selector 得到对应元素的选择器
+
+常见DOM事件！！
+click dblclick  mouseenter  mouseleave  hover  =>鼠标事件
+keypress keydown  keyup  =》 键盘事件
+submit  change focus blur => 表单事件
+focus 鼠标聚集到焦点时，  blur 离开焦点时
+
+
+----------------------
+jQuery 隐藏和显示
+hide()  和 show()
+$(selector).hide/show(speed, callback);
+toggle() ===  hide + show
+-----------------------
+淡入淡出
+fadeIn()   fadeOut()   fadeToggle()   fadeTo() 实现淡入淡出效果。
+fadeIn("slow"/speed) 淡入
+fadeOut("slow/fast"/speed)
+fadeToggle("slow/fast"/ speed)
+fadeTo() 渐变为给定的不透明度。
+fadeTo("slow/fast", number)   number介于0 1之间
+----------------------
+滑动
+slideDown()          slideUp()             slideToggle()
+||                       ||                      ||
+出现下拉菜单效果       收回下拉菜单效果       两个效果之间切换
+---------------------------
+动画 
+animate()方法允许您创建自定义的动画
+语法： $(selector).animate({params}, speed, callback);
+params定义形成动画的CSS属性
+speed规定效果时长，可以为slow/fast/miliseconds
+callback ： 动画完成后执行的函数名称
+例子:
+$("button").click(function(){
+  $("div").animate({left:'250px'});
+});
+
+
+$("button").click(function(){
+  $("div").animate({
+    left:'250px',
+    opacity:'0.5',
+    height:'150px',
+    width:'150px'
+  });
+});
+
+
+$("button").click(function(){
+  $("div").animate({
+    height:'toggle'
+  });
+});
+
+
+animate的队列功能：动画依次执行
+$("button").click(function(){
+  var div=$("div");
+  div.animate({height:'300px',opacity:'0.4'},"slow");
+  div.animate({width:'300px',opacity:'0.8'},"slow");
+  div.animate({height:'100px',opacity:'0.4'},"slow");
+  div.animate({width:'100px',opacity:'0.8'},"slow");
+});
+
+--------------------------
+停止动画：
+用于停止动画或者效果，在它们完成之前
+$(selector).stop(stopAll, goToEnd);
+stopAll规定是否清除动画队列，默认false
+goToEnd规定是否立即完成当前动画，默认false。
+
+stop()  : 停止当前动画
+----------------------
+
+
+
+jQuery Callback 方法
+隐藏完全实现后回调
+$("button").click(function(){
+  $("p").hide("slow",function(){
+    alert("段落现在被隐藏了");
+  });
+});
+隐藏效果完成前弹出alert
+$("button").click(function(){
+  $("p").hide(1000);
+  alert("段落现在被隐藏了");
+});
+
+
+-------------------------
+Chaining
+对同一个元素进行多个jQuery语句
+$("#p1").css("color","red").slideUp(2000).slideDown(2000);
+---------------
+jQuery HTML
+使用text() 得到元素的文本内容
+使用html() 得到元素的内容 包括HTML标记
+使用val() 设置或返回表单字段的值。
+使用attr()用于获取属性值，例如
+$("button").click(function(){
+	alert($("#runoob").attr("href"));
+});
+------------------
+添加元素
+append()  , prepend() ,   after(), before()
+append() 会在元素结尾插入内容
+prepend()会在元素头部插入内容
+after() 在被选元素之后插入内容
+--------------------
+删除元素
+remove() , empty()
+remove() 删除被选元素及其子元素，直接全删了
+
+
+empty()删除被选元素的子元素，但是还保留这个object
+
+remove(".italic") 过滤，除了这个class全删了
+--------------------------
+获取并且设置CSS类
+addClass()    向被选元素添加一个或者多个类
+removeClass()  从被选元素删除一个或多个类
+toggleClass()  对被选元素进行添加删除的切换操作
+css()    设置或返回样式属性
+
+例子
+$("button").click(function(){
+  $("h1,h2,p").addClass("blue");
+  $("div").addClass("important");
+});
+
+
+$("button").click(function(){
+  $("body div:first").addClass("important blue");
+});
+
+
+$("button").click(function(){
+  $("h1,h2,p").removeClass("blue");
+});
+
+$("button").click(function(){
+  $("h1,h2,p").toggleClass("blue");
+});
+
+
+$("p").css("background-color");
+
+$("p").css("background-color","yellow");
+
+
+$("p").css({"background-color":"yellow","font-size":"200%"});
+
+------------------
+尺寸
+width()
+height()
+innerWidth()
+innerHeight()
+outerWidth()
+outerHeight()
+-----------------
+遍历DOM tree
+向上遍历DOM： parent()   parents()   parentsUntil()
+parent() 返回被选元素的直接父元素
+parents() 返回被选元素的所有祖先元素，一路跟踪到<html>
+$("span").parentsUntil("div") =>返回介于span和div之间的所有祖先元素
+
+
+向下遍历DOM： children()  find()
+children() 返回被选元素的直接子元素
+find()  返回被选元素的后代元素，一路向下直到最后一个后代
+
+
+
+水平遍历： 
+siblings()    返回被选元素的所有同胞元素
+next()        返回被选元素的下一个同胞元素，只返回一个
+nextAll()     返回被选元素的所有跟随的同胞元素
+$("h2").nextUntil("h6") 返回所有介于h2到h6之间的同胞元素 
+
+
+这三个方向效果一样，只是方向相反，向左。
+prev()         
+prevAll()
+prevUntil()
+---------------------
+过滤
+first() last() eq()
+$("div p").first() 选取首个div元素内部的第一个p元素
+eq(5) 选取第6个
+$("p").filter(".url")   选取所有带有类名url的p元素
+not() 方法： 与filter方法正好相反
