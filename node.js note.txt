@@ -1,0 +1,671 @@
+node.js note
+异步操作！！！
+事件驱动+callback
+性能高，开发效率高，应用范围广（可以开发桌面系统），优化容易。
+
+缺点： IDE不完善 中间件少。
+------------------------------------------------------
+用js调用本地的函数：
+var http = require('http');
+
+http.createServer(function (request, response) {
+
+    // 发送 HTTP 头部 
+    // HTTP 状态值: 200 : OK
+    // 内容类型: text/plain
+    response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
+    fun1(response);
+    // 发送响应数据 "Hello World"
+    response.end('');
+}).listen(8000);
+
+// 终端打印如下信息
+console.log('Server running at http://127.0.0.1:8000/');
+
+function fun1(res){
+	res.write("hello, 我是fun1");
+}
+
+调用另外文件写的函数？
+
+
+var http = require('http');
+var otherfun = require("./helloworld.js");
+http.createServer(function (request, response) {
+
+    // 发送 HTTP 头部 
+    // HTTP 状态值: 200 : OK
+    // 内容类型: text/plain
+    response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
+    //fun1(response);
+    if (request.url !== "/favicon.ico"){
+    	otherfun['fun2'](response);
+    	otherfun['fun3'](response);
+    	// 发送响应数据 "Hello World"
+    	response.end('');
+    }
+}).listen(8000);
+
+// 终端打印如下信息
+console.log('Server running at http://127.0.0.1:8000/');
+
+function fun1(res){
+	res.write("hello, 我是fun1");
+}
+
+
+
+
+module.exports = {
+	fun2: function(res){
+		console.log("我是fun2");
+		res.write("你好，我是fun2");
+	},
+	fun3: function(res){
+		console.log("我是fun3");
+		res.write("你好，我是fun3");
+	}
+}
+----------------------------------------------
+
+调用模块
+var http = require('http');
+//var User = require("./User");
+var Teacher = require("./Teacher");
+http.createServer(function (request, response) {
+
+    // 发送 HTTP 头部 
+    // HTTP 状态值: 200 : OK
+    // 内容类型: text/plain
+    response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
+    //fun1(response);
+    if (request.url !== "/favicon.ico"){
+    	teacher = new Teacher(1,"zhangsan",20);
+    	teacher.enter();
+    	teacher.teach(response);
+    	response.end('');
+    }
+}).listen(8000);
+
+// 终端打印如下信息
+console.log('Server running at http://127.0.0.1:8000/');
+
+function User(id, name, age){
+	this.id = id;
+	this.name = name;
+	this.age = age;
+	this.enter = function(){
+		console.log(this.name + "进入图书馆");
+	}
+}
+module.exports = User;
+
+
+var User = require("./User");
+function Teacher(id, name, age){
+	User.apply(this,[id, name, age]);
+	this.teach = function(res){
+		res.write(this.name + "讲课");
+	}
+}
+module.exports = Teacher;
+
+---------------------------------
+路由初步
+从url中获取信息
+localhost:8080/login...
+
+
+var pathname = url.parse(request.url).pathname;
+    	
+    	pathname = pathname.replace(/\//,'');
+    	console.log(pathname);
+    	router[pathname](request, response);
+    	response.end('');
+
+
+module.exports={
+	login:function(req, res){
+		res.write("我是login 方法");
+	},
+	zhuce:function(req, res){
+		res.write("我是注册方法");
+	}
+}
+-----------------------------------------
+读文件
+同步读取，异步读取
+同步读取例子
+var http = require('http');
+var optfile = require('./optfile');
+http.createServer(function (request, response) {
+    response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
+    //fun1(response);
+    if (request.url !== "/favicon.ico"){
+    	optfile.readfileSync('./login.html', response);
+    	response.end('');
+    	console.log("主程序执行完毕");
+    }
+}).listen(8000);
+
+// 终端打印如下信息
+console.log('Server running at http://127.0.0.1:8000/');
+
+
+
+var fs = require('fs');
+module.exports={
+	readfileSync:function(path,res){
+		var data = fs.readFileSync(path,'utf-8');
+		console.log(data);
+		res.write(data);
+	}
+}
+
+
+异步
+if (request.url !== "/favicon.ico"){
+    	function recall(data){
+    		response.write(data);
+    		response.end('ok');
+    	}
+    	optfile.readfile('./login.html', recall);
+    	console.log("主程序执行完毕");
+    }
+
+
+var fs = require('fs');
+module.exports={
+	//readfileSync:function(path,res){
+	//	var data = fs.readFileSync(path,'utf-8');
+	//	console.log(data);
+	//	res.write(data);
+	//}
+	readfile:function(path,recall){
+		fs.readFile(path, function(err, data){
+			if (err){
+				console.log(err);
+			}else{
+				console.log(data.toString());
+				recall(data);
+			}
+		});
+		console.log("异步方法执行完毕");
+	}
+}
+
+
+
+路由+异步读取组合
+var http = require('http');
+var url = require('url');
+var router = require('./router');
+http.createServer(function (request, response) {
+    response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
+    //fun1(response);
+    if (request.url !== "/favicon.ico"){
+    	var pathname = url.parse(request.url).pathname;
+    	
+    	pathname = pathname.replace(/\//,'');
+    	console.log(pathname);
+    	router[pathname](request, response);
+    	//response.end('');
+    }
+}).listen(8000);
+
+// 终端打印如下信息
+console.log('Server running at http://127.0.0.1:8000/');
+
+
+
+
+
+
+
+
+var optfile = require('./optfile');
+module.exports={
+	login:function(req, res){
+		function recall(data){
+    		res.write(data);
+    		res.end('ok');
+    	}
+    	optfile.readfile('./login.html', recall);
+	},
+	zhuce:function(req, res){
+		function recall(data){
+    		res.write(data);
+    		res.end('ok');
+    	}
+    	optfile.readfile('./zhuce.html', recall);
+	}
+}
+
+
+
+var fs = require('fs');
+module.exports={
+	//readfileSync:function(path,res){
+	//	var data = fs.readFileSync(path,'utf-8');
+	//	console.log(data);
+	//	res.write(data);
+	//}
+	readfile:function(path,recall){
+		fs.readFile(path, function(err, data){
+			if (err){
+				console.log(err);
+			}else{
+				console.log(data.toString());
+				recall(data);
+			}
+		});
+		console.log("异步方法执行完毕");
+	}
+}
+
+
+重点使用了闭包的callback！！！
+
+
+----------------------------
+写文件
+writefile: function(req, res){
+		function recall(data){
+    		res.write(data);
+    		res.end('ok');
+    	}
+    	optfile.writefile('./one.txt','我的写入文件',recall);
+	}
+
+
+var pathname = url.parse(request.url).pathname;
+    	
+    	pathname = pathname.replace(/\//,'');
+    	console.log(pathname);
+    	router[pathname](request, response);
+
+
+
+writefile: function(path, data,recall){
+		fs.writeFile(path, data, function (err){
+			if (err){
+				throw err;
+			}
+			console.log('It\'s saved!');
+			recall('写文件成功');
+		});
+	},
+-------------------------
+读取并显示图片
+(读取时候，输出任何String就会停止读取图片)
+二进制读取=》二进制发送
+readImg: function(path, res){
+		fs.readFile(path,'binary',function(err, file){
+			if (err){
+				console.log(err);
+				return;
+			}else{
+				console.log("输出文件");
+				res.write(file,'binary');
+				res.end();
+			}
+		});
+	},
+
+
+optfile.readImg('./123.jpg', response);
+--------------------------------
+
+路由改造
+同时读取图片，输出字符
+
+demo.js
+var http = require('http');
+var url = require('url');
+var router = require('./router');
+http.createServer(function (request, response) {
+    if (request.url !== "/favicon.ico"){
+    	pathname = url.parse(request.url).pathname;
+    	pathname = pathname.replace(/\//,"");
+    	router[pathname](request, response);
+    }
+}).listen(8000);
+
+// 终端打印如下信息
+console.log('Server running at http://127.0.0.1:8000/');
+
+
+login.html
+<html>
+	<head>
+		
+	</head>
+	<body>
+		登录界面
+		<img src="./showimg"/>
+	</body>
+</html>
+
+
+router.js
+var optfile = require('./optfile');
+function getRecall(req, res){
+	res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
+	function recall(data){
+    	res.write(data);
+    	res.end('ok');
+    }
+    return recall;
+}
+module.exports={
+	login:function(req, res){
+		recall = getRecall(req, res);
+    	optfile.readfile('./login.html', recall);
+	},
+	zhuce:function(req, res){
+		recall = getRecall(req, res);
+    	optfile.readfile('./zhuce.html', recall);
+	},
+	writefile: function(req, res){
+		function recall(data){
+    		res.write(data);
+    		res.end('ok');
+    	}
+    	optfile.writefile('./one.txt','我的写入文件',recall);
+	},
+	showimg: function(req, res){
+		res.writeHead(200, {'Content-Type': 'image/jpeg; charset=utf-8'});
+		optfile.readImg('./123.jpg', res);
+	}
+}
+
+optfile.js
+
+var fs = require('fs');
+module.exports={
+	//readfileSync:function(path,res){
+	//	var data = fs.readFileSync(path,'utf-8');
+	//	console.log(data);
+	//	res.write(data);
+	//}
+	readfile:function(path,recall){
+		fs.readFile(path, function(err, data){
+			if (err){
+				console.log(err);
+			}else{
+				console.log(data.toString());
+				recall(data);
+			}
+		});
+		console.log("异步方法执行完毕");
+	},
+	readImg: function(path, res){
+		fs.readFile(path,'binary',function(err, file){
+			if (err){
+				console.log(err);
+				return;
+			}else{
+				console.log("输出文件");
+				res.write(file,'binary');
+				res.end();
+			}
+		});
+	},
+	writefile: function(path, data,recall){
+		fs.writeFile(path, data, function (err){
+			if (err){
+				throw err;
+			}
+			console.log('It\'s saved!');
+			recall('写文件成功');
+		});
+	},
+	writeFileSync:function(path, data){
+		fs.writeFileSync(path, data);
+		console.log("同步写文件完成");
+	}
+}
+
+
+---------------------------
+异常处理
+同步捕获，异步捕获
+
+
+同步捕获：
+try{
+    		router[pathname](request, response);
+    	}catch(err){
+    		console.log('aaaaa=' + err);
+    		response.writeHead(200,{'Content-Type': 'text/html; charset=utf-8'});
+    		response.write(err.toString());
+    		response.end('');
+    	}
+
+问题：try里的出问题，会在异步线程报错，catch中的可能不报错，直接结束主程序!!!
+
+异步捕获
+readfile:function(path,recall){
+		fs.readFile(path, function(err, data){
+			if (err){
+				console.log("bbbbb:" + err);
+				recall("文件不存在");
+			}else{
+				console.log(data.toString());
+				recall(data);
+			}
+		});
+		console.log("异步方法执行完毕");
+	},
+
+----------------------------
+参数接收
+
+get和post
+
+
+get方式
+
+
+var rdata = url.parse(req.url, true).query;
+		console.log(rdata);
+		if (rdata['email' != undefined]){
+			console.log(rdata['email']);
+			console.log(rdata['pwd']);
+		}
+
+
+
+post方式
+
+// post 方法
+		var post= '';  //暂时储存请求体信息
+		req.on('data', function(chunk){
+			post += chunk;
+		});
+		req.on('end', function(){
+			post = querystring.parse(post);
+			console.log('收到参数：' + post['email'] + '\n');
+			console.log('收到参数：' + post['pwd'] + '\n');
+		})
+
+--------------------
+正则表达式
+var str = 'jisjdofHellojosijd{name}fosdf';
+		var re = /hello/i;   //加上i就是无论大小写
+		window.onload = function(){
+			if (re.test(str)){
+				alert("含有");
+			}else{
+				alert("不含有");
+			}
+		}
+
+var re = /h...o/i;   含有
+var re = /h.{1,}o/i; 至少一个？ =》 含有
+var re = /\{.{1,}\}/i;  两个花括号之间至少含有一个字符
+
+
+newStr = str.replace(re,'张三');
+alert(newStr);   => 花括号替换成张三了
+？ 0次或1次 
++ 至少一次
+* 任意次
+
+var str = 'jisjdofHellojosijd{name}fosd{name}f';
+使用/\{.*?\}/g   g全局
+---------------------------------
+动态网页效果
+---------------------------------
+异步流程控制-》 上传，写入磁盘，入库。
+上传完了触发end事件，回调写入磁盘，end回调入库，很麻烦
+异步流程控制对象async
+串行无关联，并行无关联，串行有关联，parallellimit（限制同一时间并行多少个）
+
+串行无关联
+function exec(){
+	async.series(
+		{
+			one:function(done){
+				ii = 0;
+				setInterval(function(){
+				console.log("aaa=" + new Date());
+				ii++;
+				if (ii == 3){
+					clearInterval(this);
+					done(null, 'one完毕');
+				}
+				},1000);
+				
+			},
+			two:function(done){
+				jj = 0;
+				setInterval(function(){
+					console.log("bbb=" + new Date());
+					jj++;
+					if (jj == 3){
+						clearInterval(this);
+						done(null,'two完毕');
+					}
+				},1000);
+				
+			}
+		},function(err, rs){
+			console.log(err);
+			console.log(rs);
+		}
+	)
+}
+exec();
+
+并行无关联(出错了 跑完不回调)
+function exec(){
+	async.parallel(
+		{
+			one:function(done){
+				ii = 0;
+				setInterval(function(){
+				console.log("aaa=" + new Date());
+				ii++;
+				if (ii == 3){
+					clearInterval(this);
+					done('errrrr', 'one完毕');
+				}
+				},1000);
+				
+			},
+			two:function(done){
+				jj = 0;
+				setInterval(function(){
+					console.log("bbb=" + new Date());
+					jj++;
+					if (jj == 3){
+						clearInterval(this);
+						done(null,'two完毕');
+					}
+				},1000);
+				
+			}
+		},function(err, rs){
+			console.log(err);
+			console.log(rs);
+		}
+	)
+}
+exec();
+
+串行有关联
+function exec(){
+	async.waterfall(
+		[
+			function(done){
+				ii = 0;
+				setInterval(function(){
+				console.log("aaa=" + new Date());
+				ii++;
+				if (ii == 3){
+					clearInterval(this);
+					done(null, 'one完毕');
+				}
+				},1000);
+				
+			},
+			function(preValue,done){
+				jj = 0;
+				setInterval(function(){
+					console.log(preValue+"="+ new Date());
+					jj++;
+					if (jj == 3){
+						clearInterval(this);
+						done(null,preValue + ',two完毕');
+					}
+				},1000);
+				
+			}
+		],function(err, rs){
+			console.log(err);
+			console.log(rs);
+		}
+	)
+}
+exec();
+-----------------------
+直链MySQL
+var mysql = require('mysql');
+var connection=mysql.createConnection({
+	host:'localhost',
+	user:'root',
+	password:'root',
+	database:'test',
+	port:'3306'
+});
+connection.connect(function(err){
+	if(err){
+		console.log('[query] - :' + err);
+		return;
+	}
+	console.log('[connection connect] succeed!');
+});
+// insert
+var userAddSql = 'insert into user(uname, pwd) values(?,?)';
+var param = ['aa','aa'];
+connection.query(userAddSql, param, function(err, rs){
+	if (err){
+		console.log('insert err:', err.message);
+		return;
+	}
+	console.log('insert success');
+});
+connection.end(function(err){
+	if(err){
+		console.log(err.toString());
+		return;
+	}
+	console.log('[connection end] succeed!');
+});
+----------------------------
+连接池连接Mysql
+
+
+
+
